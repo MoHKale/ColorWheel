@@ -1,1 +1,1 @@
-[Link to Demo](https://cdn.rawgit.com/MoHKale/ColorWheel/a6239d48/demo/demo.html)
+[Link to Demo](https://cdn.rawgit.com/MoHKale/ColorWheel/20da0927/demo/demo.html)
