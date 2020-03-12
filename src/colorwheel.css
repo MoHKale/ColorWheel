@@ -1,45 +1,45 @@
 :root {
-	/* Diameter Of Color Wheel Cursor */
-	--colorwheel-cursor-dimensions: 2em;
-	
-	/* Ratio Of Color Wheel Cursor Which Encompasses Core */
-	--colorwheel-cursor-core-ratio: 0.75;
-	
-	--cursor-color: #eaeaea;
-	
-	/* Dimeter Of Inner Core Of Cursor */
-	--colorwheel-cursor-core-dimensions: calc(var(--colorwheel-cursor-core-ratio) * var(--colorwheel-cursor-dimensions));
+    /* Diameter Of Color Wheel Cursor */
+    --colorwheel-cursor-dimensions: 2em;
+
+    /* Ratio Of Color Wheel Cursor Which Encompasses Core */
+    --colorwheel-cursor-core-ratio: 0.75;
+
+    --cursor-color: #eaeaea;
+
+    /* Dimeter Of Inner Core Of Cursor */
+    --colorwheel-cursor-core-dimensions: calc(var(--colorwheel-cursor-core-ratio) * var(--colorwheel-cursor-dimensions));
 }
 
 /* Color Wheel Canvas */
 .colorwheel canvas:first-child {
-	width: inherit; height: inherit;
-	position: absolute;
+    width: inherit; height: inherit;
+    position: absolute;
 }
 
 /* Cursor Container Div */
 .colorwheel div:nth-child(2) {
-	/*#region Size Definitions*/
-	width: var(--colorwheel-cursor-dimensions);
-	height: var(--colorwheel-cursor-dimensions);
-	border-radius: calc(var(--colorwheel-cursor-dimensions) / 2);
-	/*#endreigion*/
-	
-	background-color: var(--cursor-color);
-	position: absolute;
+    /*#region Size Definitions*/
+    width: var(--colorwheel-cursor-dimensions);
+    height: var(--colorwheel-cursor-dimensions);
+    border-radius: calc(var(--colorwheel-cursor-dimensions) / 2);
+    /*#endreigion*/
+
+    background-color: var(--cursor-color);
+    position: absolute;
 }
 
 /* Cursor Core; Changes Color To Reflect Core Value */
 .colorwheel div:nth-child(2) div {
-	/*#region Size Definitions*/
-	width: var(--colorwheel-cursor-core-dimensions);
-	height: var(--colorwheel-cursor-core-dimensions);
-	border-radius: calc(var(--colorwheel-cursor-core-dimensions) / 2);
-	/*#endreigion*/
-	
-	/*#region Center Alligns Core*/
-	position: relative;
-	top:50%; left: 50%;
-	transform:translate(-50%, -50%);
-	/*#endreigion*/
+    /*#region Size Definitions*/
+    width: var(--colorwheel-cursor-core-dimensions);
+    height: var(--colorwheel-cursor-core-dimensions);
+    border-radius: calc(var(--colorwheel-cursor-core-dimensions) / 2);
+    /*#endreigion*/
+
+    /*#region Center Alligns Core*/
+    position: relative;
+    top:50%; left: 50%;
+    transform:translate(-50%, -50%);
+    /*#endreigion*/
 }

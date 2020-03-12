@@ -8,7 +8,7 @@ The methodology behind this project places heavy dependence on Javascript/JQuery
 ### Creation
 #### HTML Backend
 To create a color wheel, pick the desired location of the wheel in the HTML document and create a new div with a class value of "colorwheel" like so:
-  
+
 ```HTML
 <div class="colorwheel"></div>
 ```
