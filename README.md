@@ -2,7 +2,9 @@
 Color selection interface designed in pure JQuery (Javascript) &amp; CSS.
 
 ## Description
-The methodology behind this project places heavy dependence on Javascript/JQuery to create the desired affect. The consequence of this is that there isn't much reliance on HTML to create a color wheel. The API supports placement of multiple colorwheels within a page. I suggest taking a look at the demo to see how the color wheel actually appears, before attempting to implement it.
+The methodology behind this project places heavy dependence on Javascript/JQuery to create the desired affect. The consequence of this is that there isn't much reliance on HTML to create a color wheel. The API supports placement of multiple colorwheels within a page. I suggest taking a look at the [demo][demo] to see how the color wheel actually appears, before attempting to implement it.
+
+[demo]: https://mohkale.github.io/ColorWheel/
 
 ## Usage
 ### Creation
