@@ -1,5 +1,3 @@
-"use strict";
-
 const COLOR_WHEEL_THICKNESS = 15;
 const COLOR_WHEEL_GRADIENT_COLORS = ['#FF0000', '#00FF00', '#0000FF'];
 
@@ -19,7 +17,7 @@ function _createAppendElement(elementName, container) {
  *
  * @returns array of ColorWheel instances on the DOM.
  */
-function getAllWheels() {
+export function getAllWheels() {
     return Array
         .from(document.getElementsByClassName("colorwheel"))
         .map(elem => new ColorWheel(elem));
@@ -40,7 +38,7 @@ function getElementCentre(elem) {
  * care of drawing the color gradient to the colorwheel canvas.
  *
  */
-class ColorWheel {
+export default class ColorWheel {
 	constructor(canvasContainer) {
 		this._canvasContainer = canvasContainer; // Reference To DOM Element
 		this._canvas     = _createAppendElement('canvas', this._canvasContainer);
