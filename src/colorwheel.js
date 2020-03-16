@@ -13,8 +13,8 @@ class ColorWheel {
 
 		// #region Canvas Width Assignment When Set From Stylesheet
         this._cornerOffset = {
-            X: $(this._canvasContainer).position().left,
-            Y: $(this._canvasContainer).position().top,
+            X: this._canvasContainer.offsetLeft,
+            Y: this._canvasContainer.offsetTop,
         }
 
         this._canvas.width  = this._canvas.offsetWidth;
@@ -37,12 +37,12 @@ class ColorWheel {
             detail: { self : this } // detail.self = current instance
         });
 
-        this._canvas.onmousedown     = $.proxy(this._mouseDownEventHandler, this);
-        this._cursor.onmousedown     = $.proxy(this._mouseDownEventHandler, this);
-        this._cursorCore.onmousedown = $.proxy(this._mouseDownEventHandler, this);
+        this._canvas.addEventListener('mousedown', this._mouseDownEventHandler.bind(this));
+        this._cursor.addEventListener('mousedown', this._mouseDownEventHandler.bind(this));
+        this._cursorCore.addEventListener('mousedown', this._mouseDownEventHandler.bind(this));
 
-        $(document).mouseup($.proxy(this._mouseUpEventHandler, this));
-        $(document).mousemove($.proxy(this._mouseMoveEventHandler, this));
+        document.addEventListener('mouseup', this._mouseUpEventHandler.bind(this));
+        document.addEventListener('mousemove', this._mouseMoveEventHandler.bind(this));
         // #endregion
 
         ColorWheel.DrawColorWheel(
@@ -74,22 +74,20 @@ class ColorWheel {
                 Y: e.pageY - this._cornerOffset.Y
             }
 
-            if (true) {
-                var mouseDisplacementFromCenter = {
-                    X: this.center.X - currentMousePosition.X,
-                    Y: this.center.Y - currentMousePosition.Y
-                }
-
-                var theta = Math.atan2(mouseDisplacementFromCenter.Y, mouseDisplacementFromCenter.X);
-
-                var positionOnColorWheel = {
-                    X: this.center.X - this.radius * Math.cos(theta),
-                    Y: this.center.Y - this.radius * Math.sin(theta)
-                }
-
-                this.SetCursorLocation(positionOnColorWheel.X, positionOnColorWheel.Y);
-                this.UpdateCursorColor(); // Color Cursor Location Changed, So Update
+            var mouseDisplacementFromCenter = {
+                X: this.center.X - currentMousePosition.X,
+                Y: this.center.Y - currentMousePosition.Y
             }
+
+            var theta = Math.atan2(mouseDisplacementFromCenter.Y, mouseDisplacementFromCenter.X);
+
+            var positionOnColorWheel = {
+                X: this.center.X - this.radius * Math.cos(theta),
+                Y: this.center.Y - this.radius * Math.sin(theta)
+            }
+
+            this.SetCursorLocation(positionOnColorWheel.X, positionOnColorWheel.Y);
+            this.UpdateCursorColor(); // Color Cursor Location Changed, So Update
         }
     }
 
@@ -137,7 +135,7 @@ class ColorWheel {
 
     GetCurrentColor() {
         var colors = this.GetCurrentColorAsRGBString().replace(/[^\d,]/g, '').split(',');
-        return {R: colors[0], G: colors[1], B: colors[2], Z: 1};
+        return { red: colors[0], green: colors[1], blue: colors[2], alpha: 1};
     }
 
     GetCurrentColorAsRGBString() {
@@ -153,24 +151,16 @@ class ColorWheel {
 
     /* Traverses web page, creates & returns all color wheels */
     static GetAllWheels() {
-        var w_elements = $(".colorwheel");
-        var wheelsToReturn = []; // New wheels array
-
-        for (var X in w_elements.get()) {
-            wheelsToReturn.push(new ColorWheel(w_elements.get(X)));
-        }
-
-        return wheelsToReturn; // Return all built wheel instances
+        return Array
+            .from(document.getElementsByClassName("colorwheel"))
+            .map(elem => new ColorWheel(elem));
     }
 
     // Gets center of a DOM element
     static GetElementCentre(elem) {
-        elem = $(elem); // Cast to JQuery Object
-        var pos = elem.position(); // Store Position
-
         return {
-            X: pos.left + elem.width() / 2,
-            Y: pos.top + elem.height() / 2
+            X: elem.offsetLeft + elem.offsetWidth  / 2,
+            Y: elem.offsetTop  + elem.offsetHeight / 2
         };
     }
 
@@ -179,9 +169,6 @@ class ColorWheel {
         // #region Variable Definitions
         var thetaChunk = (2 * Math.PI) / gradColors.length;
         // Angle turned for each color match in gradient list
-
-        var theta = -Math.PI/2; // Add offset by 90 Deg to make
-        // First color in gradColors at top of wheel gradient
 
         var colorMatch = {start: null, end: null} // Gradient Pair
         // #endregion
