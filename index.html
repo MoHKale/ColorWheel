@@ -3,7 +3,6 @@
         <title>Color Wheel Demo</title>
 
         <link rel="stylesheet" type="text/css" href="src/colorwheel.css">
-        <script src="src/colorwheel.js"></script>
 
         <style>
             .colorwheel {
@@ -69,8 +68,10 @@
 
         </div>
 
-        <script>
-         digitise = function(value, length) {
+        <script type="module">
+         import ColorWheel, { getAllWheels } from './src/colorwheel.js';
+
+         function digitise (value, length) {
              return value.toString().padStart(length, '0')
          }
 
@@ -82,7 +83,7 @@
          let greenValue   = document.getElementById("greenValue");
          let colorDisplay = document.getElementById("colorDisplay");
 
-         setInputValues = function({ red, green, blue }) {
+         function setInputValues({ red, green, blue }) {
              redInput.value   = red;
              greenInput.value = green;
              blueInput.value  = blue;
