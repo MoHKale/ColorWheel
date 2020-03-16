@@ -3,13 +3,49 @@
 const COLOR_WHEEL_THICKNESS = 15;
 const COLOR_WHEEL_GRADIENT_COLORS = ['#FF0000', '#00FF00', '#0000FF'];
 
-/* Simple Class To Build Color Wheel Functionality */
+/**
+ * Creates a new element, appends to {@code container}, then
+ * returns it.
+ */
+function _createAppendElement(elementName, container) {
+    var elem = document.createElement(elementName);
+    container.appendChild(elem); // Add as child
+    return elem; // Return Created Element
+}
+
+
+/**
+ * get an array of all colorwheels on the page.
+ *
+ * @returns array of ColorWheel instances on the DOM.
+ */
+function getAllWheels() {
+    return Array
+        .from(document.getElementsByClassName("colorwheel"))
+        .map(elem => new ColorWheel(elem));
+}
+
+/** Gets center of a DOM element. */
+function getElementCentre(elem) {
+    return {
+        X: elem.offsetLeft + elem.offsetWidth  / 2,
+        Y: elem.offsetTop  + elem.offsetHeight / 2
+    };
+}
+
+/**
+ * Represents a single color wheel visible on the DOM.
+ *
+ * This class binds listeners for handling user input, and takes
+ * care of drawing the color gradient to the colorwheel canvas.
+ *
+ */
 class ColorWheel {
 	constructor(canvasContainer) {
 		this._canvasContainer = canvasContainer; // Reference To DOM Element
-		this._canvas     = this._CreateAppendElement('canvas', this._canvasContainer);
-		this._cursor     = this._CreateAppendElement('div',    this._canvasContainer);
-		this._cursorCore = this._CreateAppendElement('div',    this._cursor);
+		this._canvas     = _createAppendElement('canvas', this._canvasContainer);
+		this._cursor     = _createAppendElement('div',    this._canvasContainer);
+		this._cursorCore = _createAppendElement('div',    this._cursor);
 
 		// #region Canvas Width Assignment When Set From Stylesheet
         this._cornerOffset = {
@@ -27,8 +63,8 @@ class ColorWheel {
         // # region Instance Variable Assignment
         this._context = this._canvas.getContext('2d');
 
-        this.radius = 0.75 * Math.min(this.Width(), this.Height()) / 2;
-        this.center = {X: this.Width() / 2, Y: this.Height() / 2};
+        this.radius = 0.75 * Math.min(this.width, this.height) / 2;
+        this.center = {X: this.width / 2, Y: this.height / 2};
         this.mousedown = false; // By default, mouse is assumed to be up
         // #endregion
 
@@ -45,26 +81,20 @@ class ColorWheel {
         document.addEventListener('mousemove', this._mouseMoveEventHandler.bind(this));
         // #endregion
 
-        ColorWheel.DrawColorWheel(
+        ColorWheel.drawColorWheel(
             this._context, this.center, -Math.PI/2, this.radius,
             COLOR_WHEEL_THICKNESS, COLOR_WHEEL_GRADIENT_COLORS
         );
 
-        this.SetCursorLocation(this.center.X, this.center.Y-this.radius);
-        this.UpdateCursorColor(); // Update color of cursor to reflect position
+        this.setCursorLocation(this.center.X, this.center.Y-this.radius);
+        this.updateCursorColor(); // Update color of cursor to reflect position
     }
 
-    /* Get Width Of Color Wheel Element */
-    Width() { return this._canvas.width; }
+    get width()  { return this._canvas.width; }
+    get height() { return this._canvas.height; }
 
-    /* Get Height Of Color Wheel Element */
-    Height() { return this._canvas.height; }
-
-    // #region Store Mouse Down Flag
     _mouseDownEventHandler() { this.mousedown = true; }
-
-    _mouseUpEventHandler() { this.mousedown = false; }
-    // #endregion
+    _mouseUpEventHandler()   { this.mousedown = false; }
 
     _mouseMoveEventHandler(e) {
         if (this.mousedown) { // Mouse Down
@@ -86,30 +116,23 @@ class ColorWheel {
                 Y: this.center.Y - this.radius * Math.sin(theta)
             }
 
-            this.SetCursorLocation(positionOnColorWheel.X, positionOnColorWheel.Y);
-            this.UpdateCursorColor(); // Color Cursor Location Changed, So Update
+            this.setCursorLocation(positionOnColorWheel.X, positionOnColorWheel.Y);
+            this.updateCursorColor(); // Color Cursor Location Changed, So Update
         }
     }
 
-    GetCanvasColorValueFromLocation(loc) {
+    getCanvasColorValueFromLocation(loc) {
         var data = this._context.getImageData(loc.X, loc.Y, 1, 1).data;
         return `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3]})`;
     }
 
     // Sets color of cursor
-    SetCursorColor(color) {
+    setCursorColor(color) {
         this._cursorCore.style.backgroundColor = color;
     }
 
-    // Creates Element, Appends To Container, Returns New Element
-    _CreateAppendElement(elementName, container) {
-        var elem = document.createElement(elementName);
-        container.appendChild(elem); // Add as child
-        return elem; // Return Created Element
-    }
-
     /* Sets Cursor Location Relative To Canvas */
-    SetCursorLocation(X, Y) {
+    setCursorLocation(X, Y) {
         X -= this._cursor.width / 2;
         Y -= this._cursor.height / 2;
 
@@ -121,61 +144,45 @@ class ColorWheel {
     }
 
     /* Uses position of cursor to determine color */
-    UpdateCursorColor() {
-        var center = ColorWheel.GetElementCentre(this._cursor);
+    updateCursorColor() {
+        var center = getElementCentre(this._cursor);
 
-        // #region Adjust to relative position
         center.X -= this._cornerOffset.X;
         center.Y -= this._cornerOffset.Y;
-        // #endregion
 
-        this.SetCursorColor(this.GetCanvasColorValueFromLocation(center));
+        this.setCursorColor(this.getCanvasColorValueFromLocation(center));
         this._canvasContainer.dispatchEvent(this._colorChangedEvent);
     }
 
-    GetCurrentColor() {
-        var colors = this.GetCurrentColorAsRGBString().replace(/[^\d,]/g, '').split(',');
+    getCurrentColor() {
+        var colors = this.getCurrentColorAsRGBString().replace(/[^\d,]/g, '').split(',');
         return { red: colors[0], green: colors[1], blue: colors[2], alpha: 1};
     }
 
-    GetCurrentColorAsRGBString() {
+    getCurrentColorAsRGBString() {
         return this._cursorCore.style.backgroundColor;
     }
 
-    /* Binds Argument Method As Event Handler To Internal Event
-     * S.N. You can access the current colorwheel instance in the
-     * event handler, via the detail.self property of the argument */
-    ColorChanged(eventListener) {
+    /**
+     * Binds {@code eventListener} as event handler to the ColorChanged
+     * event.
+     *
+     * You can access the current {@code ColorWheel} instance in the
+     * event handler, via the {@code detail.self} property of the
+     * argument.
+     */
+    colorChanged(eventListener) {
         this._canvasContainer.addEventListener('ColorChanged', eventListener);
     }
 
-    /* Traverses web page, creates & returns all color wheels */
-    static GetAllWheels() {
-        return Array
-            .from(document.getElementsByClassName("colorwheel"))
-            .map(elem => new ColorWheel(elem));
-    }
-
-    // Gets center of a DOM element
-    static GetElementCentre(elem) {
-        return {
-            X: elem.offsetLeft + elem.offsetWidth  / 2,
-            Y: elem.offsetTop  + elem.offsetHeight / 2
-        };
-    }
-
-    /* Method to actually draw a rainbow color ring */
-    static DrawColorWheel(context, center, theta, radius, thickness, gradColors) {
-        // #region Variable Definitions
+    /** actually draw a rainbow color ring */
+    static drawColorWheel(context, center, theta, radius, thickness, gradColors) {
         var thetaChunk = (2 * Math.PI) / gradColors.length;
         // Angle turned for each color match in gradient list
-
-        var colorMatch = {start: null, end: null} // Gradient Pair
-        // #endregion
+        var colorMatch = {start: null, end: null}
 
         for (var X=0; X < gradColors.length; X++) {
-            // #region Iterated Variable Definitions
-            colorMatch.start = gradColors[X]; // Set gradient colors
+            colorMatch.start = gradColors[X];
             colorMatch.end   = gradColors[(X+1) % gradColors.length];
 
             var startPos = {
@@ -185,28 +192,25 @@ class ColorWheel {
                 X: center.X + (radius * Math.cos(theta+thetaChunk)),
                 Y: center.Y + (radius * Math.sin(theta+thetaChunk))
             }
-            // #endregion
 
-            //#region Gradient Definition
             var gradient = context.createLinearGradient(
                 startPos.X, startPos.Y, endPos.X, endPos.Y
             );
 
             gradient.addColorStop(0, colorMatch.start);
             gradient.addColorStop(1, colorMatch.end);
-            // #endregion
 
             // #region Draw
-            context.beginPath(); // Initialise Canvas To Draw
+            context.beginPath();
 
-            context.strokeStyle = gradient; // Set Fill
+            context.strokeStyle = gradient;
             context.webkitImageSmoothingEnabled = true;
-            context.lineWidth = thickness; // Set Line Width
+            context.lineWidth = thickness;
 
             context.arc(center.X, center.Y, radius, theta, theta+thetaChunk);
 
-            context.stroke(); // Actually draw changes To Canvas
-            context.closePath(); // Prevent Gradient Wrapping
+            context.stroke();
+            context.closePath();
             // #endregion
 
 			theta += thetaChunk; // Move To Next Chunk
