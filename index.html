@@ -2,12 +2,8 @@
     <head>
         <title>Color Wheel Demo</title>
 
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
-        <!-- #region Import Contents Of Src Folder -->
         <link rel="stylesheet" type="text/css" href="src/colorwheel.css">
         <script src="src/colorwheel.js"></script>
-        <!-- #endregion -->
 
         <style>
             .colorwheel {
@@ -38,40 +34,6 @@
                 width: 25px;
             }
         </style>
-
-        <script>
-            Digitise = function(value, length) {
-                return value.toString().padStart(length, '0')
-            }
-
-            SetInputValues = function(rgb) {
-                $('#redInput')[0].value   = rgb.R;
-                $('#greenInput')[0].value = rgb.G;
-                $('#blueInput')[0].value  = rgb.B;
-
-                $("#redValue").text(Digitise(rgb.R, 3));
-                $("#greenValue").text(Digitise(rgb.G, 3));
-                $("#blueValue").text(Digitise(rgb.B, 3));
-            }
-
-            var colorWheels;
-
-            $(document).ready(function() {
-                $('#redInput')[0].disabled = true;
-                $('#greenInput')[0].disabled = true;
-                $('#blueInput')[0].disabled = true;
-
-                colorWheels = ColorWheel.GetAllWheels();
-
-                colorWheels[0].ColorChanged(function(args) {
-                    SetInputValues(args.detail.self.GetCurrentColor()); // Update display on html document
-                    $('#colorDisplay')[0].style.backgroundColor = args.detail.self.GetCurrentColorAsRGBString();
-                });
-
-                SetInputValues(colorWheels[0].GetCurrentColor()); // Update Initial Values
-                $('#colorDisplay')[0].style.backgroundColor = colorWheels[0].GetCurrentColorAsRGBString();
-            });
-        </script>
     </head>
 
     <body style="width:auto">
@@ -106,6 +68,46 @@
         <div style="width:40em; height:3em; background-color:blue" id="colorDisplay">
 
         </div>
+
+        <script>
+         Digitise = function(value, length) {
+             return value.toString().padStart(length, '0')
+         }
+
+         let redInput     = document.getElementById("redInput");
+         let blueInput    = document.getElementById("blueInput");
+         let greenInput   = document.getElementById("greenInput");
+         let redValue     = document.getElementById("redValue");
+         let blueValue    = document.getElementById("blueValue");
+         let greenValue   = document.getElementById("greenValue");
+         let colorDisplay = document.getElementById("colorDisplay");
+
+         SetInputValues = function({ red, green, blue }) {
+             redInput.value   = red;
+             greenInput.value = green;
+             blueInput.value  = blue;
+
+             redValue.textContent   = Digitise(red, 3);
+             greenValue.textContent = Digitise(green, 3);
+             blueValue.textContent  = Digitise(blue, 3);
+         }
+
+         var colorWheels;
+
+         redInput.disabled   = true;
+         greenInput.disabled = true;
+         blueInput.disabled  = true;
+
+         colorWheels = ColorWheel.GetAllWheels();
+
+         colorWheels[0].ColorChanged(function(args) {
+             SetInputValues(args.detail.self.GetCurrentColor()); // Update display on html document
+             colorDisplay.style.backgroundColor = args.detail.self.GetCurrentColorAsRGBString();
+         });
+
+         SetInputValues(colorWheels[0].GetCurrentColor()); // Update Initial Values
+         colorDisplay.style.backgroundColor = colorWheels[0].GetCurrentColorAsRGBString();
+        </script>
     </body>
 
 </html>
