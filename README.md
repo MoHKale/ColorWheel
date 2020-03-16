@@ -2,8 +2,12 @@
 A simple color selection wheel, written in vanilla javascript and css. You can find the demo [here][demo].
 
 [demo]: https://mohkale.github.io/ColorWheel/
-<iframe src="https://mohkale.github.io/ColorWheel/" width="100%" style="border: 0px; height: 25em">
-</iframe>
+
+[![demo](./screenshot.jpg)](https://mohkale.github.io/ColorWheel/)
+
+<!--
+  <iframe src="https://mohkale.github.io/ColorWheel/" width="100%" style="border: 0px; height: 25em"></iframe>
+-->
 
 Click on a color to select it, drag around the wheel to cycle through colors.
 
