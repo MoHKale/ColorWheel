@@ -70,7 +70,7 @@
         </div>
 
         <script>
-         Digitise = function(value, length) {
+         digitise = function(value, length) {
              return value.toString().padStart(length, '0')
          }
 
@@ -82,14 +82,14 @@
          let greenValue   = document.getElementById("greenValue");
          let colorDisplay = document.getElementById("colorDisplay");
 
-         SetInputValues = function({ red, green, blue }) {
+         setInputValues = function({ red, green, blue }) {
              redInput.value   = red;
              greenInput.value = green;
              blueInput.value  = blue;
 
-             redValue.textContent   = Digitise(red, 3);
-             greenValue.textContent = Digitise(green, 3);
-             blueValue.textContent  = Digitise(blue, 3);
+             redValue.textContent   = digitise(red, 3);
+             greenValue.textContent = digitise(green, 3);
+             blueValue.textContent  = digitise(blue, 3);
          }
 
          var colorWheels;
@@ -98,15 +98,15 @@
          greenInput.disabled = true;
          blueInput.disabled  = true;
 
-         colorWheels = ColorWheel.GetAllWheels();
+         colorWheels = getAllWheels();
 
-         colorWheels[0].ColorChanged(function(args) {
-             SetInputValues(args.detail.self.GetCurrentColor()); // Update display on html document
-             colorDisplay.style.backgroundColor = args.detail.self.GetCurrentColorAsRGBString();
+         colorWheels[0].colorChanged(function(args) {
+             setInputValues(args.detail.self.getCurrentColor()); // Update display on html document
+             colorDisplay.style.backgroundColor = args.detail.self.getCurrentColorAsRGBString();
          });
 
-         SetInputValues(colorWheels[0].GetCurrentColor()); // Update Initial Values
-         colorDisplay.style.backgroundColor = colorWheels[0].GetCurrentColorAsRGBString();
+         setInputValues(colorWheels[0].getCurrentColor()); // Update Initial Values
+         colorDisplay.style.backgroundColor = colorWheels[0].getCurrentColorAsRGBString();
         </script>
     </body>
 
