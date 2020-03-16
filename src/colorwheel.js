@@ -1,11 +1,14 @@
-const COLOR_WHEEL_THICKNESS = 15;
-const COLOR_WHEEL_GRADIENT_COLORS = ['#FF0000', '#00FF00', '#0000FF'];
+export var colorWheelThickness = 15;
+export var colorWheelGradientColors = ['#FF0000', '#00FF00', '#0000FF'];
+
+export function setColorWheelThickness(value) { colorWheelThickness = value; }
+export function setColorWheelGradientColors(value) { colorWheelGradientColors = value; }
 
 /**
  * Creates a new element, appends to {@code container}, then
  * returns it.
  */
-function _createAppendElement(elementName, container) {
+function createAppendElement(elementName, container) {
     var elem = document.createElement(elementName);
     container.appendChild(elem); // Add as child
     return elem; // Return Created Element
@@ -40,40 +43,40 @@ function getElementCentre(elem) {
  */
 export default class ColorWheel {
 	constructor(canvasContainer) {
-		this._canvasContainer = canvasContainer; // Reference To DOM Element
-		this._canvas     = _createAppendElement('canvas', this._canvasContainer);
-		this._cursor     = _createAppendElement('div',    this._canvasContainer);
-		this._cursorCore = _createAppendElement('div',    this._cursor);
+		this.parent     = canvasContainer; // Reference To DOM Element
+		this.canvas     = createAppendElement('canvas', this.parent);
+		this.cursor     = createAppendElement('div',    this.parent);
+		this.cursorCore = createAppendElement('div',    this.cursor);
 
-		// #region Canvas Width Assignment When Set From Stylesheet
+		// #region Canvas width assignment (when set from stylesheet)
         this._cornerOffset = {
-            X: this._canvasContainer.offsetLeft,
-            Y: this._canvasContainer.offsetTop,
+            X: this.parent.offsetLeft,
+            Y: this.parent.offsetTop,
         }
 
-        this._canvas.width  = this._canvas.offsetWidth;
-        this._canvas.height = this._canvas.offsetHeight;
+        this.canvas.width  = this.canvas.offsetWidth;
+        this.canvas.height = this.canvas.offsetHeight;
 
-        this._cursor.width  = this._cursor.offsetWidth;
-        this._cursor.height = this._cursor.offsetHeight;
+        this.cursor.width  = this.cursor.offsetWidth;
+        this.cursor.height = this.cursor.offsetHeight;
         // #endregion
 
-        // # region Instance Variable Assignment
-        this._context = this._canvas.getContext('2d');
+        // # region Instance variable assignment
+        this._context = this.canvas.getContext('2d');
 
         this.radius = 0.75 * Math.min(this.width, this.height) / 2;
         this.center = {X: this.width / 2, Y: this.height / 2};
         this.mousedown = false; // By default, mouse is assumed to be up
         // #endregion
 
-        // #region Event Assignments
+        // #region Events
         this._colorChangedEvent = new CustomEvent('ColorChanged', {
             detail: { self : this } // detail.self = current instance
         });
 
-        this._canvas.addEventListener('mousedown', this._mouseDownEventHandler.bind(this));
-        this._cursor.addEventListener('mousedown', this._mouseDownEventHandler.bind(this));
-        this._cursorCore.addEventListener('mousedown', this._mouseDownEventHandler.bind(this));
+        this.canvas.addEventListener('mousedown', this._mouseDownEventHandler.bind(this));
+        this.cursor.addEventListener('mousedown', this._mouseDownEventHandler.bind(this));
+        this.cursorCore.addEventListener('mousedown', this._mouseDownEventHandler.bind(this));
 
         document.addEventListener('mouseup', this._mouseUpEventHandler.bind(this));
         document.addEventListener('mousemove', this._mouseMoveEventHandler.bind(this));
@@ -81,15 +84,15 @@ export default class ColorWheel {
 
         ColorWheel.drawColorWheel(
             this._context, this.center, -Math.PI/2, this.radius,
-            COLOR_WHEEL_THICKNESS, COLOR_WHEEL_GRADIENT_COLORS
+            colorWheelThickness, colorWheelGradientColors
         );
 
         this.setCursorLocation(this.center.X, this.center.Y-this.radius);
         this.updateCursorColor(); // Update color of cursor to reflect position
     }
 
-    get width()  { return this._canvas.width; }
-    get height() { return this._canvas.height; }
+    get width()  { return this.canvas.width; }
+    get height() { return this.canvas.height; }
 
     _mouseDownEventHandler() { this.mousedown = true; }
     _mouseUpEventHandler()   { this.mousedown = false; }
@@ -126,30 +129,30 @@ export default class ColorWheel {
 
     // Sets color of cursor
     setCursorColor(color) {
-        this._cursorCore.style.backgroundColor = color;
+        this.cursorCore.style.backgroundColor = color;
     }
 
     /* Sets Cursor Location Relative To Canvas */
     setCursorLocation(X, Y) {
-        X -= this._cursor.width / 2;
-        Y -= this._cursor.height / 2;
+        X -= this.cursor.width / 2;
+        Y -= this.cursor.height / 2;
 
         X += this._cornerOffset.X;
         Y += this._cornerOffset.Y;
 
-        this._cursor.style.left = X;
-        this._cursor.style.top  = Y;
+        this.cursor.style.left = X;
+        this.cursor.style.top  = Y;
     }
 
     /* Uses position of cursor to determine color */
     updateCursorColor() {
-        var center = getElementCentre(this._cursor);
+        var center = getElementCentre(this.cursor);
 
         center.X -= this._cornerOffset.X;
         center.Y -= this._cornerOffset.Y;
 
         this.setCursorColor(this.getCanvasColorValueFromLocation(center));
-        this._canvasContainer.dispatchEvent(this._colorChangedEvent);
+        this.parent.dispatchEvent(this._colorChangedEvent);
     }
 
     getCurrentColor() {
@@ -158,7 +161,7 @@ export default class ColorWheel {
     }
 
     getCurrentColorAsRGBString() {
-        return this._cursorCore.style.backgroundColor;
+        return this.cursorCore.style.backgroundColor;
     }
 
     /**
@@ -170,7 +173,7 @@ export default class ColorWheel {
      * argument.
      */
     colorChanged(eventListener) {
-        this._canvasContainer.addEventListener('ColorChanged', eventListener);
+        this.parent.addEventListener('ColorChanged', eventListener);
     }
 
     /** actually draw a rainbow color ring */
